@@ -1,0 +1,639 @@
+<!-- Mission Log — Diario di bordo BD di Rachele Cespi -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mission Log — versione portatile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --void:#0d0920; --panel:#181130; --panel-2:#211846; --row:#1c1440;
+    --beam:#8b6cff; --beam-soft:#b6a4ff; --star:#ece8ff; --mist:#9a8fc7;
+    --edge:rgba(255,255,255,.09); --edge-2:rgba(255,255,255,.05);
+    --hot:#ff8a6b; --warm:#ffc876; --cold:#6cb6ff; --good:#66e0b0;
+    --shadow:0 18px 40px -22px rgba(0,0,0,.8);
+    --r:16px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:
+      radial-gradient(1100px 620px at 12% -8%, rgba(139,108,255,.20), transparent 60%),
+      radial-gradient(900px 500px at 108% 4%, rgba(108,182,255,.12), transparent 55%),
+      var(--void);
+    color:var(--star); font-family:"Inter",system-ui,sans-serif; min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:940px; margin:0 auto; padding:26px 20px 80px}
+  .eyebrow{font-family:"Space Mono",monospace; font-size:11px; letter-spacing:.28em; text-transform:uppercase; color:var(--beam-soft)}
+  .mono{font-family:"Space Mono",monospace}
+
+  /* header */
+  header.top{display:flex; justify-content:space-between; align-items:flex-end; gap:18px; flex-wrap:wrap; margin-bottom:22px}
+  .brand h1{font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:30px; letter-spacing:-.01em; margin:6px 0 2px}
+  .brand p{margin:0; color:var(--mist); font-size:13.5px}
+  .stats{display:flex; gap:10px; flex-wrap:wrap}
+  .stat{background:var(--panel); border:1px solid var(--edge); border-radius:12px; padding:9px 13px; min-width:82px}
+  .stat b{font-family:"Space Grotesk",sans-serif; font-size:20px; display:block; line-height:1}
+  .stat span{font-size:10.5px; color:var(--mist); letter-spacing:.05em; text-transform:uppercase; font-family:"Space Mono",monospace}
+
+  /* tabs */
+  .tabs{display:flex; gap:6px; background:var(--panel); border:1px solid var(--edge); border-radius:12px; padding:5px; margin-bottom:20px; width:fit-content}
+  .tab{appearance:none; border:0; background:transparent; color:var(--mist); font-family:"Space Grotesk",sans-serif; font-weight:600; font-size:14px; padding:9px 16px; border-radius:8px; cursor:pointer; transition:background .18s,color .18s}
+  .tab[aria-selected="true"]{background:linear-gradient(180deg,var(--beam),#6f4ff0); color:#fff; box-shadow:0 6px 18px -8px rgba(139,108,255,.9)}
+  .tab:focus-visible{outline:2px solid var(--beam-soft); outline-offset:2px}
+
+  /* toolbar */
+  .toolbar{display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:14px}
+  .filters{display:flex; gap:6px; flex-wrap:wrap}
+  .chip{appearance:none; font-family:"Space Mono",monospace; font-size:11px; letter-spacing:.04em; color:var(--mist); background:var(--panel); border:1px solid var(--edge); border-radius:999px; padding:6px 11px; cursor:pointer; transition:.15s}
+  .chip[aria-pressed="true"]{color:var(--star); border-color:var(--beam); background:rgba(139,108,255,.16)}
+  .chip:focus-visible{outline:2px solid var(--beam-soft); outline-offset:2px}
+
+  .btn{appearance:none; font-family:"Space Grotesk",sans-serif; font-weight:600; font-size:13.5px; border-radius:10px; padding:10px 16px; cursor:pointer; border:1px solid transparent; transition:.16s}
+  .btn-primary{background:linear-gradient(180deg,var(--beam),#6f4ff0); color:#fff; box-shadow:0 8px 20px -10px rgba(139,108,255,.9)}
+  .btn-primary:hover{transform:translateY(-1px)}
+  .btn-ghost{background:var(--panel); border-color:var(--edge); color:var(--star)}
+  .btn-ghost:hover{border-color:var(--beam)}
+  .btn:focus-visible{outline:2px solid var(--beam-soft); outline-offset:2px}
+  .btn-sm{padding:7px 12px; font-size:12.5px}
+
+  /* contact cards */
+  .list{display:flex; flex-direction:column; gap:11px}
+  .card{background:var(--panel); border:1px solid var(--edge); border-radius:var(--r); box-shadow:var(--shadow); overflow:hidden}
+  .card-head{display:flex; align-items:center; gap:12px; padding:14px 16px; cursor:pointer}
+  .temp-dot{width:11px; height:11px; border-radius:50%; flex:none; box-shadow:0 0 0 4px rgba(255,255,255,.04)}
+  .t-caldo{background:var(--hot); box-shadow:0 0 12px 1px var(--hot)}
+  .t-tiepido{background:var(--warm); box-shadow:0 0 12px 1px var(--warm)}
+  .t-freddo{background:var(--cold); box-shadow:0 0 12px 1px var(--cold)}
+  .c-name{font-family:"Space Grotesk",sans-serif; font-weight:600; font-size:16px}
+  .c-sub{font-size:12.5px; color:var(--mist)}
+  .c-meta{margin-left:auto; display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:flex-end}
+  .badge{font-family:"Space Mono",monospace; font-size:10.5px; letter-spacing:.03em; padding:4px 9px; border-radius:999px; border:1px solid var(--edge); color:var(--beam-soft); white-space:nowrap}
+  .badge.seg{color:var(--mist)}
+  .caret{color:var(--mist); font-size:12px; transition:transform .2s}
+  .card.open .caret{transform:rotate(90deg)}
+
+  .card-body{display:none; padding:0 16px 16px; border-top:1px solid var(--edge-2)}
+  .card.open .card-body{display:block}
+  .field-row{display:flex; gap:12px; flex-wrap:wrap; margin-top:14px}
+  .nextact{background:var(--panel-2); border:1px solid var(--edge); border-radius:10px; padding:11px 13px; flex:1; min-width:220px}
+  .nextact .eyebrow{display:block; margin-bottom:5px}
+  .nextact-text{font-size:14px}
+  .notes{white-space:pre-wrap; font-size:13.5px; color:#d7d1f0; line-height:1.55}
+
+  .logline{display:flex; gap:10px; font-size:12.5px; padding:7px 0; border-bottom:1px dashed var(--edge-2)}
+  .logline .when{font-family:"Space Mono",monospace; color:var(--mist); flex:none; min-width:96px}
+  .addlog{display:flex; gap:8px; margin-top:10px}
+  .addlog input{flex:1}
+
+  .card-actions{display:flex; gap:8px; margin-top:14px; flex-wrap:wrap}
+
+  /* inputs */
+  input[type=text], textarea, select{
+    width:100%; background:var(--panel-2); border:1px solid var(--edge); color:var(--star);
+    border-radius:9px; padding:10px 12px; font-family:"Inter",sans-serif; font-size:14px;
+  }
+  input::placeholder, textarea::placeholder{color:#6f668f}
+  input:focus, textarea:focus, select:focus{outline:none; border-color:var(--beam); box-shadow:0 0 0 3px rgba(139,108,255,.18)}
+  label.lbl{display:block; font-family:"Space Mono",monospace; font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--beam-soft); margin:0 0 6px}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+  .fg{margin-bottom:14px}
+  select{appearance:none; background-image:linear-gradient(45deg,transparent 50%,var(--mist) 50%),linear-gradient(135deg,var(--mist) 50%,transparent 50%); background-position:calc(100% - 18px) 17px,calc(100% - 13px) 17px; background-size:5px 5px,5px 5px; background-repeat:no-repeat}
+
+  /* modal */
+  .overlay{position:fixed; inset:0; background:rgba(6,4,16,.72); backdrop-filter:blur(4px); display:none; align-items:flex-start; justify-content:center; padding:38px 16px; z-index:40; overflow:auto}
+  .overlay.show{display:flex}
+  .modal{background:var(--panel); border:1px solid var(--edge); border-radius:20px; width:100%; max-width:560px; box-shadow:0 40px 80px -30px #000; padding:24px}
+  .modal h2{font-family:"Space Grotesk",sans-serif; margin:0 0 3px; font-size:20px}
+  .modal .sub{color:var(--mist); font-size:13px; margin:0 0 18px}
+  .modal-actions{display:flex; justify-content:space-between; gap:10px; margin-top:20px; align-items:center}
+
+  /* sessions */
+  .energy{display:flex; gap:8px; align-items:center}
+  .edot{width:26px; height:26px; border-radius:50%; border:1px solid var(--edge); background:var(--panel-2); cursor:pointer; font-family:"Space Mono",monospace; font-size:12px; color:var(--mist); display:grid; place-items:center; transition:.14s}
+  .edot[aria-pressed="true"]{background:linear-gradient(180deg,var(--good),#3fc79a); color:#062318; border-color:transparent; font-weight:700}
+  .edot:focus-visible{outline:2px solid var(--beam-soft); outline-offset:2px}
+
+  .session{background:var(--panel); border:1px solid var(--edge); border-radius:var(--r); box-shadow:var(--shadow); margin-bottom:11px; overflow:hidden}
+  .session-head{display:flex; align-items:center; gap:12px; padding:14px 16px; cursor:pointer}
+  .stardate{font-family:"Space Mono",monospace; font-size:11px; color:var(--beam-soft); letter-spacing:.05em}
+  .s-title{font-family:"Space Grotesk",sans-serif; font-weight:600; font-size:15.5px}
+  .s-energy{margin-left:auto; font-family:"Space Mono",monospace; font-size:12px; color:var(--good)}
+  .session-body{display:none; padding:4px 16px 16px; border-top:1px solid var(--edge-2)}
+  .session.open .session-body{display:block}
+  .qa{padding:11px 0; border-bottom:1px dashed var(--edge-2)}
+  .qa:last-child{border-bottom:0}
+  .qa .q{font-family:"Space Mono",monospace; font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--mist); margin-bottom:4px}
+  .qa .a{font-size:14px; line-height:1.55; white-space:pre-wrap; color:#ded9f4}
+  .qa .a.empty{color:#5f5780; font-style:italic}
+
+  /* empty state */
+  .empty{text-align:center; padding:48px 20px; border:1px dashed var(--edge); border-radius:var(--r); color:var(--mist)}
+  .empty b{display:block; font-family:"Space Grotesk",sans-serif; color:var(--star); font-size:16px; margin-bottom:6px; font-weight:600}
+
+  .hidden{display:none !important}
+  .savehint{font-size:11.5px; color:var(--mist); font-family:"Space Mono",monospace}
+  .backupbar{display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin:-6px 0 20px}
+  .codearea{font-family:"Space Mono",monospace; font-size:12px; line-height:1.5; white-space:pre; overflow:auto}
+
+  @media (max-width:600px){
+    .brand h1{font-size:24px}
+    .grid2{grid-template-columns:1fr}
+    .c-meta{width:100%; justify-content:flex-start; margin-left:23px}
+    .stat{min-width:0; flex:1}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none !important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="eyebrow">Diario di bordo · BD</div>
+      <h1>Mission Log</h1>
+      <p>Chi hai contattato, cosa hai fatto, come è andata — e come stai.</p>
+    </div>
+    <div class="stats" id="stats"></div>
+  </header>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" id="tab-c" aria-selected="true" onclick="switchTab('contatti')">Contatti</button>
+    <button class="tab" role="tab" id="tab-s" aria-selected="false" onclick="switchTab('sessioni')">Sessione settimanale</button>
+  </div>
+
+  <div class="backupbar">
+    <span class="savehint" id="storageState"></span>
+    <div style="display:flex; gap:8px">
+      <button class="btn btn-ghost btn-sm" onclick="openExport()">⭳ Backup</button>
+      <button class="btn btn-ghost btn-sm" onclick="openImport()">Ripristina</button>
+    </div>
+  </div>
+
+  <!-- CONTATTI -->
+  <section id="view-contatti">
+    <div class="toolbar">
+      <div class="filters" id="filters"></div>
+      <button class="btn btn-primary" onclick="openContact()">+ Nuovo contatto</button>
+    </div>
+    <div class="list" id="contactList"></div>
+  </section>
+
+  <!-- SESSIONI -->
+  <section id="view-sessioni" class="hidden">
+    <div class="toolbar">
+      <div><span class="savehint" id="sessHint"></span></div>
+      <button class="btn btn-primary" onclick="openSession()">+ Nuova sessione</button>
+    </div>
+    <div class="list" id="sessionList"></div>
+  </section>
+</div>
+
+<!-- Contact modal -->
+<div class="overlay" id="ovContact" role="dialog" aria-modal="true" aria-labelledby="cModalTitle">
+  <div class="modal">
+    <h2 id="cModalTitle">Nuovo contatto</h2>
+    <p class="sub">Parti sempre da <em>loro</em>: un aggancio concreto batte cento parole su di te.</p>
+    <div class="fg"><label class="lbl" for="f-name">Nome</label><input type="text" id="f-name" placeholder="es. Marta Bianchi"></div>
+    <div class="grid2">
+      <div class="fg"><label class="lbl" for="f-company">Azienda</label><input type="text" id="f-company" placeholder="es. NovaSaaS"></div>
+      <div class="fg"><label class="lbl" for="f-seg">Segmento</label>
+        <select id="f-seg"><option>Games</option><option>Software / SaaS</option><option>AR / VR</option><option>Altro</option></select></div>
+    </div>
+    <div class="grid2">
+      <div class="fg"><label class="lbl" for="f-temp">Temperatura</label>
+        <select id="f-temp"><option value="caldo">Caldo — mi conosce</option><option value="tiepido">Tiepido — mi segue/incrociato</option><option value="freddo">Freddo — sconosciuto</option></select></div>
+      <div class="fg"><label class="lbl" for="f-status">Stato</label>
+        <select id="f-status"><option>Da contattare</option><option>In conversazione</option><option>Audit inviato</option><option>Proposta</option><option>Cliente</option><option>In pausa</option><option>Chiuso — no</option></select></div>
+    </div>
+    <div class="grid2">
+      <div class="fg"><label class="lbl" for="f-next">Prossima azione</label><input type="text" id="f-next" placeholder="es. mandare mini-audit onboarding"></div>
+      <div class="fg"><label class="lbl" for="f-date">Entro il</label><input type="text" id="f-date" placeholder="es. ven 25/07"></div>
+    </div>
+    <div class="fg"><label class="lbl" for="f-notes">Note</label><textarea id="f-notes" rows="3" placeholder="Aggancio, contesto, cosa gli/le serve…"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-sm" id="cDelete" onclick="deleteContact()" style="visibility:hidden">Elimina</button>
+      <div style="display:flex; gap:8px">
+        <button class="btn btn-ghost" onclick="closeOverlay('ovContact')">Annulla</button>
+        <button class="btn btn-primary" onclick="saveContact()">Salva contatto</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Session modal -->
+<div class="overlay" id="ovSession" role="dialog" aria-modal="true" aria-labelledby="sModalTitle">
+  <div class="modal">
+    <h2 id="sModalTitle">Sessione della settimana</h2>
+    <p class="sub">10 minuti, una volta a settimana. Onestà, non perfezione.</p>
+    <div class="grid2">
+      <div class="fg"><label class="lbl" for="s-label">Settimana</label><input type="text" id="s-label"></div>
+      <div class="fg"><label class="lbl">Energia / serenità</label><div class="energy" id="s-energy" role="group" aria-label="Livello di energia da 1 a 5"></div></div>
+    </div>
+    <div class="fg"><label class="lbl" for="s-done">Cosa ho fatto (messaggi, post, audit, call)</label><textarea id="s-done" rows="2"></textarea></div>
+    <div class="fg"><label class="lbl" for="s-worked">Cosa ha funzionato / mi ha dato energia</label><textarea id="s-worked" rows="2"></textarea></div>
+    <div class="fg"><label class="lbl" for="s-avoid">Cosa ho evitato o non ha funzionato (e perché)</label><textarea id="s-avoid" rows="2"></textarea></div>
+    <div class="fg"><label class="lbl" for="s-win">Una piccola vittoria 🎉</label><input type="text" id="s-win" placeholder="anche solo 'ho premuto invio senza riscrivere 10 volte'"></div>
+    <div class="fg"><label class="lbl" for="s-change">Una cosa che cambio</label><input type="text" id="s-change"></div>
+    <div class="fg"><label class="lbl" for="s-goal">Obiettivo prossima settimana — 1 azione (non un risultato)</label><input type="text" id="s-goal" placeholder="es. riattivare 3 contatti caldi"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-sm" id="sDelete" onclick="deleteSession()" style="visibility:hidden">Elimina</button>
+      <div style="display:flex; gap:8px">
+        <button class="btn btn-ghost" onclick="closeOverlay('ovSession')">Annulla</button>
+        <button class="btn btn-primary" onclick="saveSession()">Salva sessione</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Export modal -->
+<div class="overlay" id="ovExport" role="dialog" aria-modal="true" aria-labelledby="expTitle">
+  <div class="modal">
+    <h2 id="expTitle">Esporta backup</h2>
+    <p class="sub">Questo è tutto il tuo Mission Log. Copialo o scaricalo e conservalo dove vuoi (anche su GitHub).</p>
+    <textarea id="exportText" readonly rows="8" class="codearea"></textarea>
+    <div id="exportMsg" class="savehint" style="margin-top:8px"></div>
+    <div class="modal-actions">
+      <span></span>
+      <div style="display:flex; gap:8px">
+        <button class="btn btn-ghost" onclick="closeOverlay('ovExport')">Chiudi</button>
+        <button class="btn btn-ghost" onclick="downloadExport()">Scarica file</button>
+        <button class="btn btn-primary" id="copyBtn" onclick="copyExport()">Copia</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Import modal -->
+<div class="overlay" id="ovImport" role="dialog" aria-modal="true" aria-labelledby="impTitle">
+  <div class="modal">
+    <h2 id="impTitle">Ripristina da backup</h2>
+    <p class="sub">Incolla qui un backup (o carica il file .json). Sostituirà i dati attualmente in questa vista.</p>
+    <textarea id="importText" rows="8" class="codearea" placeholder="Incolla qui il contenuto del backup…"></textarea>
+    <div style="margin-top:8px">
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('importFile').click()">Carica file .json</button>
+      <input type="file" id="importFile" accept="application/json,.json" class="hidden" onchange="importFromFile(event)">
+    </div>
+    <div id="importMsg" class="savehint" style="margin-top:8px; color:var(--warm)"></div>
+    <div class="modal-actions">
+      <span></span>
+      <div style="display:flex; gap:8px">
+        <button class="btn btn-ghost" onclick="closeOverlay('ovImport')">Annulla</button>
+        <button class="btn btn-primary" onclick="doImport()">Ripristina</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------- storage (localStorage del browser, con fallback in memoria) ---------- */
+const mem = {};
+async function loadKey(key, fallback){
+  try{
+    const raw = localStorage.getItem(key);
+    if(raw != null) return JSON.parse(raw);
+  }catch(e){ /* storage non disponibile o dato corrotto */ }
+  return (key in mem) ? mem[key] : fallback;
+}
+async function saveKey(key, val){
+  mem[key] = val;
+  try{
+    localStorage.setItem(key, JSON.stringify(val));
+    return true;
+  }catch(e){ return false; }
+}
+
+/* ---------- state ---------- */
+let contacts = [];
+let sessions = [];
+let filters = { seg:null, temp:null, status:null };
+let editingContactId = null;
+let editingSessionId = null;
+let sessionEnergy = 3;
+let persistent = true;
+
+const TEMP_LABEL = {caldo:'Caldo', tiepido:'Tiepido', freddo:'Freddo'};
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+
+/* ---------- init ---------- */
+(async function init(){
+  contacts = await loadKey('logbook_contacts', []);
+  sessions = await loadKey('logbook_sessions', []);
+  persistent = (function(){ try{ const k='__ml_test__'; localStorage.setItem(k,'1'); localStorage.removeItem(k); return true; }catch(e){ return false; } })();
+  buildFilters();
+  renderAll();
+  updateStorageState();
+})();
+
+function updateStorageState(){
+  const el=document.getElementById('storageState'); if(!el) return;
+  el.textContent = persistent
+    ? 'I dati sono salvati in questo browser. Esporta un backup ogni tanto, e prima di cambiare computer.'
+    : 'Questo browser non salva in locale (a volte succede aprendo il file col doppio clic): usa Backup, o mettila online con GitHub Pages.';
+}
+
+function renderAll(){ renderStats(); renderContacts(); renderSessions(); }
+
+/* ---------- stats ---------- */
+function renderStats(){
+  const active = contacts.filter(c=>['In conversazione','Audit inviato','Proposta'].includes(c.status)).length;
+  const clients = contacts.filter(c=>c.status==='Cliente').length;
+  const s = [
+    ['Contatti', contacts.length],
+    ['In gioco', active],
+    ['Clienti', clients],
+    ['Sessioni', sessions.length]
+  ];
+  document.getElementById('stats').innerHTML = s.map(([l,v])=>
+    `<div class="stat"><b>${v}</b><span>${l}</span></div>`).join('');
+}
+
+/* ---------- filters ---------- */
+function buildFilters(){
+  const defs = [
+    ['seg','Games'],['seg','Software / SaaS'],['seg','AR / VR'],
+    ['temp','caldo'],['temp','tiepido'],['temp','freddo'],
+    ['status','Da contattare'],['status','In conversazione'],['status','Proposta'],['status','Cliente']
+  ];
+  document.getElementById('filters').innerHTML = defs.map(([k,v])=>{
+    const label = k==='temp'? TEMP_LABEL[v] : v;
+    return `<button class="chip" data-k="${k}" data-v="${v}" aria-pressed="false" onclick="toggleFilter('${k}','${v}',this)">${label}</button>`;
+  }).join('');
+}
+function toggleFilter(k,v,el){
+  const on = filters[k]===v;
+  // reset others in same group
+  document.querySelectorAll(`.chip[data-k="${k}"]`).forEach(c=>c.setAttribute('aria-pressed','false'));
+  filters[k] = on ? null : v;
+  if(!on) el.setAttribute('aria-pressed','true');
+  renderContacts();
+}
+
+/* ---------- contacts render ---------- */
+function renderContacts(){
+  const el = document.getElementById('contactList');
+  let list = contacts.slice().sort((a,b)=> (b.updated||0)-(a.updated||0));
+  if(filters.seg) list = list.filter(c=>c.seg===filters.seg);
+  if(filters.temp) list = list.filter(c=>c.temp===filters.temp);
+  if(filters.status) list = list.filter(c=>c.status===filters.status);
+
+  if(!contacts.length){
+    el.innerHTML = `<div class="empty"><b>Il log è vuoto — per ora.</b>
+      Comincia dal caldo: aggiungi una persona che già sa come lavori e riattivala.
+      <div style="margin-top:16px"><button class="btn btn-primary" onclick="openContact()">+ Aggiungi il primo contatto</button></div></div>`;
+    return;
+  }
+  if(!list.length){ el.innerHTML = `<div class="empty"><b>Nessun contatto con questi filtri.</b>Prova a togliere qualche filtro.</div>`; return; }
+
+  el.innerHTML = list.map(c=>{
+    const logs = (c.log||[]).slice().reverse();
+    const logHtml = logs.length ? logs.map(l=>`<div class="logline"><span class="when">${l.when}</span><span>${esc(l.text)}</span></div>`).join('') : '<div class="c-sub" style="padding:6px 0">Ancora nessuna mossa registrata.</div>';
+    return `<div class="card" id="card-${c.id}">
+      <div class="card-head" onclick="toggleCard('${c.id}')">
+        <span class="temp-dot t-${c.temp}" title="${TEMP_LABEL[c.temp]}"></span>
+        <div>
+          <div class="c-name">${esc(c.name||'Senza nome')}</div>
+          <div class="c-sub">${esc(c.company||'')}</div>
+        </div>
+        <div class="c-meta">
+          <span class="badge seg">${esc(c.seg)}</span>
+          <span class="badge">${esc(c.status)}</span>
+          <span class="caret">▶</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="field-row">
+          <div class="nextact">
+            <span class="eyebrow">Prossima azione</span>
+            <div class="nextact-text">${c.next? esc(c.next) : '<span style="color:#5f5780">— da definire —</span>'} ${c.date? `<span class="mono" style="color:var(--warm)"> · ${esc(c.date)}</span>`:''}</div>
+          </div>
+        </div>
+        ${c.notes? `<div style="margin-top:14px"><span class="eyebrow">Note</span><div class="notes" style="margin-top:6px">${esc(c.notes)}</div></div>`:''}
+        <div style="margin-top:16px"><span class="eyebrow">Storico</span>
+          <div style="margin-top:8px">${logHtml}</div>
+          <div class="addlog">
+            <input type="text" id="addlog-${c.id}" placeholder="registra una mossa… (es. inviato messaggio C)" onkeydown="if(event.key==='Enter')addLog('${c.id}')">
+            <button class="btn btn-ghost btn-sm" onclick="addLog('${c.id}')">Registra</button>
+          </div>
+        </div>
+        <div class="card-actions">
+          <button class="btn btn-ghost btn-sm" onclick="openContact('${c.id}')">Modifica</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function toggleCard(id){ document.getElementById('card-'+id)?.classList.toggle('open'); }
+
+async function addLog(id){
+  const inp = document.getElementById('addlog-'+id);
+  const text = inp.value.trim(); if(!text) return;
+  const c = contacts.find(x=>x.id===id); if(!c) return;
+  c.log = c.log||[];
+  c.log.push({when: today(), text});
+  c.updated = Date.now();
+  await saveKey('logbook_contacts', contacts);
+  renderContacts(); renderStats();
+  document.getElementById('card-'+id)?.classList.add('open');
+}
+
+/* ---------- contact modal ---------- */
+function openContact(id){
+  editingContactId = id||null;
+  const c = id ? contacts.find(x=>x.id===id) : null;
+  document.getElementById('cModalTitle').textContent = c? 'Modifica contatto' : 'Nuovo contatto';
+  set('f-name', c?.name||''); set('f-company', c?.company||'');
+  document.getElementById('f-seg').value = c?.seg||'Software / SaaS';
+  document.getElementById('f-temp').value = c?.temp||'tiepido';
+  document.getElementById('f-status').value = c?.status||'Da contattare';
+  set('f-next', c?.next||''); set('f-date', c?.date||''); set('f-notes', c?.notes||'');
+  document.getElementById('cDelete').style.visibility = c? 'visible':'hidden';
+  showOverlay('ovContact'); document.getElementById('f-name').focus();
+}
+async function saveContact(){
+  const name = val('f-name').trim();
+  if(!name){ document.getElementById('f-name').focus(); return; }
+  const data = {
+    name, company:val('f-company').trim(), seg:val('f-seg'),
+    temp:val('f-temp'), status:val('f-status'),
+    next:val('f-next').trim(), date:val('f-date').trim(), notes:val('f-notes').trim(),
+    updated: Date.now()
+  };
+  if(editingContactId){
+    const c = contacts.find(x=>x.id===editingContactId);
+    const prevStatus = c.status;
+    Object.assign(c, data);
+    if(prevStatus!==data.status){ c.log=c.log||[]; c.log.push({when:today(), text:`Stato → ${data.status}`}); }
+  }else{
+    data.id = uid(); data.log = [{when:today(), text:'Aggiunto al log'}];
+    contacts.push(data);
+  }
+  await saveKey('logbook_contacts', contacts);
+  closeOverlay('ovContact'); renderAll();
+}
+async function deleteContact(){
+  if(!editingContactId) return;
+  contacts = contacts.filter(x=>x.id!==editingContactId);
+  await saveKey('logbook_contacts', contacts);
+  closeOverlay('ovContact'); renderAll();
+}
+
+/* ---------- sessions ---------- */
+function renderSessions(){
+  const hint = document.getElementById('sessHint');
+  hint.textContent = persistent ? 'Salvato in questo browser.' : 'Salvataggio locale non attivo — usa Backup.';
+  const el = document.getElementById('sessionList');
+  if(!sessions.length){
+    el.innerHTML = `<div class="empty"><b>Nessuna sessione ancora.</b>
+      Dedica 10 minuti a fine settimana: non per giudicarti, per vederti migliorare.
+      <div style="margin-top:16px"><button class="btn btn-primary" onclick="openSession()">+ Prima sessione</button></div></div>`;
+    return;
+  }
+  const list = sessions.slice().sort((a,b)=> b.created-a.created);
+  el.innerHTML = list.map(s=>{
+    const qas = [
+      ['Cosa ho fatto', s.done],
+      ['Ha funzionato', s.worked],
+      ['Evitato / non ha funzionato', s.avoid],
+      ['Piccola vittoria', s.win],
+      ['Cosa cambio', s.change],
+      ['Obiettivo prossima settimana', s.goal]
+    ];
+    return `<div class="session" id="sess-${s.id}">
+      <div class="session-head" onclick="toggleSession('${s.id}')">
+        <div>
+          <div class="stardate">${esc(s.label||'Settimana')}</div>
+          <div class="s-title">Log di rotta</div>
+        </div>
+        <div class="s-energy">energia ${'●'.repeat(s.energy||0)}${'○'.repeat(5-(s.energy||0))}</div>
+      </div>
+      <div class="session-body">
+        ${qas.map(([q,a])=>`<div class="qa"><div class="q">${q}</div><div class="a ${a?'':'empty'}">${a? esc(a):'—'}</div></div>`).join('')}
+        <div class="card-actions"><button class="btn btn-ghost btn-sm" onclick="openSession('${s.id}')">Modifica</button></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function toggleSession(id){ document.getElementById('sess-'+id)?.classList.toggle('open'); }
+
+function renderEnergyPicker(){
+  const box = document.getElementById('s-energy');
+  box.innerHTML='';
+  for(let i=1;i<=5;i++){
+    const b=document.createElement('button');
+    b.type='button'; b.className='edot'; b.textContent=i;
+    b.setAttribute('aria-pressed', String(i===sessionEnergy));
+    b.onclick=()=>{ sessionEnergy=i; renderEnergyPicker(); };
+    box.appendChild(b);
+  }
+}
+function openSession(id){
+  editingSessionId = id||null;
+  const s = id ? sessions.find(x=>x.id===id) : null;
+  document.getElementById('sModalTitle').textContent = s? 'Modifica sessione' : 'Sessione della settimana';
+  set('s-label', s?.label || weekLabel());
+  sessionEnergy = s?.energy || 3; renderEnergyPicker();
+  set('s-done', s?.done||''); set('s-worked', s?.worked||''); set('s-avoid', s?.avoid||'');
+  set('s-win', s?.win||''); set('s-change', s?.change||''); set('s-goal', s?.goal||'');
+  document.getElementById('sDelete').style.visibility = s? 'visible':'hidden';
+  showOverlay('ovSession'); document.getElementById('s-done').focus();
+}
+async function saveSession(){
+  const data = {
+    label:val('s-label').trim()||weekLabel(), energy:sessionEnergy,
+    done:val('s-done').trim(), worked:val('s-worked').trim(), avoid:val('s-avoid').trim(),
+    win:val('s-win').trim(), change:val('s-change').trim(), goal:val('s-goal').trim()
+  };
+  if(editingSessionId){ Object.assign(sessions.find(x=>x.id===editingSessionId), data); }
+  else{ data.id=uid(); data.created=Date.now(); sessions.push(data); }
+  await saveKey('logbook_sessions', sessions);
+  closeOverlay('ovSession'); renderAll();
+}
+async function deleteSession(){
+  if(!editingSessionId) return;
+  sessions = sessions.filter(x=>x.id!==editingSessionId);
+  await saveKey('logbook_sessions', sessions);
+  closeOverlay('ovSession'); renderAll();
+}
+
+/* ---------- tabs / overlay helpers ---------- */
+function switchTab(name){
+  const c = name==='contatti';
+  document.getElementById('view-contatti').classList.toggle('hidden', !c);
+  document.getElementById('view-sessioni').classList.toggle('hidden', c);
+  document.getElementById('tab-c').setAttribute('aria-selected', String(c));
+  document.getElementById('tab-s').setAttribute('aria-selected', String(!c));
+}
+function showOverlay(id){ document.getElementById(id).classList.add('show'); }
+function closeOverlay(id){ document.getElementById(id).classList.remove('show'); }
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('mousedown', e=>{ if(e.target===o) o.classList.remove('show'); }));
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') document.querySelectorAll('.overlay.show').forEach(o=>o.classList.remove('show')); });
+
+/* ---------- backup / restore ---------- */
+function currentPayload(){
+  return JSON.stringify({app:'mission-log', version:1, exportedAt:new Date().toISOString(), contacts, sessions}, null, 2);
+}
+function openExport(){
+  document.getElementById('exportText').value = currentPayload();
+  document.getElementById('exportMsg').textContent = '';
+  showOverlay('ovExport');
+  const ta=document.getElementById('exportText'); ta.focus(); ta.setSelectionRange(0,0);
+}
+function copyExport(){
+  const ta=document.getElementById('exportText'); ta.select(); ta.setSelectionRange(0, ta.value.length);
+  let ok=false;
+  try{ if(navigator.clipboard){ navigator.clipboard.writeText(ta.value); ok=true; } }catch(e){}
+  if(!ok){ try{ ok=document.execCommand('copy'); }catch(e){} }
+  const btn=document.getElementById('copyBtn'); const t=btn.textContent;
+  btn.textContent = ok? 'Copiato ✓' : 'Selezionato — Ctrl/Cmd+C';
+  setTimeout(()=>btn.textContent=t, 1800);
+}
+function downloadExport(){
+  try{
+    const blob=new Blob([currentPayload()],{type:'application/json'});
+    const url=URL.createObjectURL(blob); const a=document.createElement('a');
+    const d=new Date(); const p=n=>String(n).padStart(2,'0');
+    a.href=url; a.download=`mission-log-backup-${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}.json`;
+    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    document.getElementById('exportMsg').textContent='File generato. Se non è partito il download, usa "Copia".';
+  }catch(e){
+    document.getElementById('exportMsg').textContent='Il download è bloccato in questa vista: usa "Copia" e incolla in un file.';
+  }
+}
+function openImport(){
+  document.getElementById('importText').value='';
+  document.getElementById('importMsg').textContent='';
+  showOverlay('ovImport');
+}
+function importFromFile(ev){
+  const f=ev.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{ document.getElementById('importText').value=r.result; };
+  r.readAsText(f); ev.target.value='';
+}
+async function doImport(){
+  const raw=document.getElementById('importText').value.trim();
+  const msg=document.getElementById('importMsg');
+  if(!raw){ msg.textContent='Incolla un backup o carica un file.'; return; }
+  let data; try{ data=JSON.parse(raw); }catch(e){ msg.textContent='Il testo non è un JSON valido.'; return; }
+  if(!data || (!Array.isArray(data.contacts) && !Array.isArray(data.sessions))){ msg.textContent='Non sembra un backup di Mission Log.'; return; }
+  contacts = Array.isArray(data.contacts)? data.contacts : [];
+  sessions = Array.isArray(data.sessions)? data.sessions : [];
+  await saveKey('logbook_contacts', contacts);
+  await saveKey('logbook_sessions', sessions);
+  closeOverlay('ovImport'); renderAll(); updateStorageState();
+}
+
+/* ---------- utils ---------- */
+function esc(s){ return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function set(id,v){ document.getElementById(id).value=v; }
+function val(id){ return document.getElementById(id).value; }
+const MONTHS=['gen','feb','mar','apr','mag','giu','lug','ago','set','ott','nov','dic'];
+function today(){ const d=new Date(); return `${String(d.getDate()).padStart(2,'0')} ${MONTHS[d.getMonth()]}`; }
+function weekLabel(){
+  const d=new Date(); const day=(d.getDay()+6)%7; // Mon=0
+  const mon=new Date(d); mon.setDate(d.getDate()-day);
+  const sun=new Date(mon); sun.setDate(mon.getDate()+6);
+  const f=(x)=>`${x.getDate()} ${MONTHS[x.getMonth()]}`;
+  return `Sett. ${f(mon)} – ${f(sun)} ${sun.getFullYear()}`;
+}
+</script>
