@@ -1,0 +1,26 @@
+{
+  "app": "mission-log",
+  "version": 1,
+  "exportedAt": "2026-09-02T16:05:55.619Z",
+  "contacts": [
+    {
+      "name": "Lotta Gerdt (lotta.gerdt@variant.se)",
+      "company": "Variant",
+      "seg": "Software / SaaS",
+      "temp": "freddo",
+      "status": "In conversazione",
+      "next": "rispondere alla sua eventuale mail di risposta",
+      "date": "30/09",
+      "notes": "Contatto ricevuto per raccomandazione. inviata mail a freddo per presentare me, il mio cv ed il sito web",
+      "updated": 1788356258764,
+      "id": "mtk54a9tv6jk",
+      "log": [
+        {
+          "when": "02 set",
+          "text": "Aggiunto al log"
+        }
+      ]
+    }
+  ],
+  "sessions": []
+}
